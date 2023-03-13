@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/@alpine-collective/toolkit@1.0.2/dist/cdn.min.js" defer></script>
+<script src="https://unpkg.com/alpinejs" defer></script>
+</head>
+<body>
+    <div x-data="timerComponent()">
+  <div x-text="seconds"></div>
+  <button x-on:click="start()">Start</button>
+</div>
+
+<script>
+  function timerComponent() {
+    return {
+      intervalDuration: 18, // in seconds
+      seconds: 18,
+      interval: null,
+      start() {
+        this.interval = setInterval(() => {
+          if (this.seconds <= 0) {
+            this.stop();
+            return;
+          }
+          this.seconds--;
+          if (this.seconds === (this.intervalDuration / 3 * 2) || this.seconds === (this.intervalDuration / 3)) {
+            this.beep(1);
+          }
+          if (this.seconds === 0) {
+            this.beep(1);
+            setTimeout(() => {
+              this.beep(1);
+              const now = new Date().toLocaleString();
+              localStorage.setItem(now, `breathing room completed: ${this.intervalDuration}`);
+              this.reset();
+            }, 3000);
+          }
+        }, 1000);
+      },
+      stop() {
+        clearInterval(this.interval);
+      },
+      reset() {
+        this.stop();
+        this.seconds = this.intervalDuration;
+      },
+      beep(times) {
+        let audio = new Audio("beep.mp3");
+        for (let i = 0; i < times; i++) {
+          audio.play();
+        }
+      }
+    };
+  }
+</script>
+
+
+</body>
+</html>
